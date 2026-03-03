@@ -11,4 +11,5 @@ public interface UserDao {
 	void removeUser(Long id);
 	Optional<User> getUserById(Long id);
 	List<User> getAllUsers();
+	Optional<User> findByEmail(String email);
 }

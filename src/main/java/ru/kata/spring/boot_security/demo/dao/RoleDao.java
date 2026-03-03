@@ -9,4 +9,5 @@ public interface RoleDao {
 	Optional<Role> getRoleByName(String name);
 	List<Role> getAllRoles();
 	Optional<Role> getRoleById(Long id);
+	public List<Role> getRolesByIds(List<Long> ids);
 }

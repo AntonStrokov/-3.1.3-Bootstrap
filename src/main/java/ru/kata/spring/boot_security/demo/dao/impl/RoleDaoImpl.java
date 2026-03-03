@@ -1,12 +1,14 @@
-package ru.kata.spring.boot_security.demo.dao;
+package ru.kata.spring.boot_security.demo.dao.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,5 +45,14 @@ public class RoleDaoImpl implements RoleDao {
 	public Optional<Role> getRoleById(Long id) {
 		return Optional.ofNullable(entityManager.find(Role.class, id));
 	}
+
+	@Override
+	public List<Role> getRolesByIds(List<Long> ids) {
+		if (ids == null || ids.isEmpty()) return Collections.emptyList();
+		return entityManager.createQuery("SELECT r FROM Role r WHERE r.id IN :ids", Role.class)
+				.setParameter("ids", ids)
+				.getResultList();
+	}
+
 }
 

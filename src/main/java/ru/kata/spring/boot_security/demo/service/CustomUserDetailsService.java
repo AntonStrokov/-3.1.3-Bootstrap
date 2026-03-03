@@ -25,18 +25,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		log.info("Loading user details: email={}", email);
 
-		User user = userDao.getAllUsers().stream()
-				.filter(u -> u.getEmail().equals(email))
-				.findFirst()
+		return userDao.findByEmail(email)
 				.orElseThrow(() -> {
 					log.warn("User not found: email={}", email);
 					return new UsernameNotFoundException("User not found: " + email);
 				});
-
-		log.info("User loaded successfully: id={}, email={}, roles={}",
-				user.getId(), user.getEmail(),
-				user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
-
-		return user;
 	}
+
 }
