@@ -17,19 +17,16 @@ public class UserDaoImpl implements UserDao {
 	private EntityManager entityManager;
 
 	@Override
-	@Transactional
 	public void addUser(User user) {
 		entityManager.persist(user);
 	}
 
 	@Override
-	@Transactional
 	public void updateUser(User user) {
 		entityManager.merge(user);
 	}
 
 	@Override
-	@Transactional
 	public void removeUser(Long id) {
 		entityManager.createQuery("DELETE FROM User u WHERE u.id = :id")
 				.setParameter("id", id)
@@ -37,7 +34,6 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	@Transactional
 	public Optional<User> getUserById(Long id) {
 		return Optional.ofNullable(entityManager.find(User.class, id));
 	}

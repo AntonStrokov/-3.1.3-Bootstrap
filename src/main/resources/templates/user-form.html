@@ -14,7 +14,8 @@
                     <h4 class="mb-0" th:text="${user.id} != null ? 'Edit User' : 'Add User'"></h4>
                 </div>
                 <div class="card-body p-4">
-                    <form th:action="@{${user.id} != null ? '/admin/update' : '/admin/add'}" method="post" th:object="${user}">
+                    <form th:action="@{${user.id} != null ? '/admin/update' : '/admin/add'}" method="post" th:object="${user}"
+                          novalidate>
                         <input type="hidden" th:if="${user.id != null}" th:field="*{id}" />
 
                         <div class="mb-3">

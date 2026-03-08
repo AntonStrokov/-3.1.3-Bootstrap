@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +40,21 @@ public class AdminController {
 
 	@PostMapping("/add")
 	public String addUser(@ModelAttribute("user") @Valid User user,
-	                      @RequestParam(value = "roles", required = false) List<Long> roleIds) {
+	                      BindingResult bindingResult,
+	                      @RequestParam(value = "roles", required = false) List<Long> roleIds,
+	                      Model model) {
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("allRoles", roleService.getAllRoles());
+
+			if (roleIds != null && !roleIds.isEmpty()) {
+				List<Role> selectedRoles = roleService.getRolesByIds(roleIds);
+				user.setRoles(new HashSet<>(selectedRoles));
+			}
+
+			return "user-form";
+		}
+
 		userService.addUser(user, roleIds);
 		return "redirect:/admin";
 	}
@@ -45,7 +62,6 @@ public class AdminController {
 	@GetMapping("/edit")
 	public String showEditForm(@RequestParam("id") Long id, Model model) {
 		User user = userService.getUserById(id);
-		user.setPassword(null);
 
 		model.addAttribute("user", user);
 		model.addAttribute("allRoles", roleService.getAllRoles());
@@ -55,7 +71,21 @@ public class AdminController {
 
 	@PostMapping("/update")
 	public String updateUser(@ModelAttribute("user") @Valid User user,
-	                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds) {
+	                         BindingResult bindingResult,
+	                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
+	                         Model model) {
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("allRoles", roleService.getAllRoles());
+
+			if (roleIds != null && !roleIds.isEmpty()) {
+				List<Role> selectedRoles = roleService.getRolesByIds(roleIds);
+				user.setRoles(new HashSet<>(selectedRoles));
+			}
+
+			return "user-form";
+		}
+
 		userService.updateUser(user, roleIds);
 		return "redirect:/admin";
 	}
