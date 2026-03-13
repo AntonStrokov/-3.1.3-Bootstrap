@@ -28,13 +28,19 @@ public class AdminController {
 	@GetMapping
 	public String listUsers(Model model, @AuthenticationPrincipal User currentUser) {
 		model.addAttribute("users", userService.getAllUsers());
+		model.addAttribute("currentUser", currentUser);
+		model.addAttribute("page", "users");
+
 		return "admin-list";
 	}
+
 
 	@GetMapping("/add")
 	public String showAddForm(Model model) {
 		model.addAttribute("user", new User());
 		model.addAttribute("allRoles", roleService.getAllRoles());
+		model.addAttribute("page", "newuser");
+
 		return "user-form";
 	}
 
