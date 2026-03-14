@@ -29,6 +29,10 @@ public class User implements UserDetails {
 	@Size(min = 2, max = 30, message = "Имя должно быть от 2 до 30 символов")
 	private String name;
 
+	@NotBlank(message = "Фамилия не может быть пустой")
+	@Size(min = 2, max = 30, message = "Фамилия должна быть от 2 до 30 символов")
+	private String lastName;
+
 	@NotBlank(message = "Email не может быть пустым")
 	@Email(message = "Email должен быть корректным")
 	private String email;

@@ -34,12 +34,12 @@ public class AdminController {
 		return "admin-list";
 	}
 
-
 	@GetMapping("/add")
-	public String showAddForm(Model model) {
+	public String showAddForm(Model model, @AuthenticationPrincipal User currentUser) {
 		model.addAttribute("user", new User());
 		model.addAttribute("allRoles", roleService.getAllRoles());
 		model.addAttribute("page", "newuser");
+		model.addAttribute("currentUser", currentUser);
 
 		return "user-form";
 	}
@@ -48,7 +48,8 @@ public class AdminController {
 	public String addUser(@ModelAttribute("user") @Valid User user,
 	                      BindingResult bindingResult,
 	                      @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
-	                      Model model) {
+	                      Model model,
+	                      @AuthenticationPrincipal User currentUser) {
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("allRoles", roleService.getAllRoles());
@@ -58,6 +59,7 @@ public class AdminController {
 				user.setRoles(new HashSet<>(selectedRoles));
 			}
 
+			model.addAttribute("currentUser", currentUser);
 			return "user-form";
 		}
 
@@ -66,24 +68,28 @@ public class AdminController {
 	}
 
 	@GetMapping("/edit")
-	public String showEditForm(@RequestParam("id") Long id, Model model) {
+	public String showEditForm(@RequestParam("id") Long id,
+	                           Model model,
+	                           @AuthenticationPrincipal User currentUser) {
 		User user = userService.getUserById(id);
 
 		model.addAttribute("user", user);
 		model.addAttribute("allRoles", roleService.getAllRoles());
+		model.addAttribute("currentUser", currentUser);
+
 		return "user-form";
 	}
-
 
 	@PostMapping("/update")
 	public String updateUser(@ModelAttribute("user") @Valid User user,
 	                         BindingResult bindingResult,
 	                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
-	                         Model model) {
+	                         Model model,
+	                         @AuthenticationPrincipal User currentUser) {
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("allRoles", roleService.getAllRoles());
-
+			model.addAttribute("currentUser", currentUser);
 			return "user-form";
 		}
 
@@ -97,4 +103,3 @@ public class AdminController {
 		return "redirect:/admin";
 	}
 }
-
