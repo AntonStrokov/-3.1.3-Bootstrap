@@ -71,13 +71,23 @@ public class AdminController {
 	                         @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
 	                         Model model,
 	                         @AuthenticationPrincipal User currentUser) {
+
 		if (bindingResult.hasErrors()) {
+			// 1. Данные для списка и шапки
 			model.addAttribute("users", userService.getAllUsers());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("allRoles", roleService.getAllRoles());
-			model.addAttribute("errorUser", user); // Чтобы JS открыл нужную модалку
+
+			// 2. Объект с ошибками (для модалки)
+			model.addAttribute("errorUser", user);
+
+			// 3. ПУСТОЙ ОБЪЕКТ ДЛЯ ФОРМЫ NEW USER (Критично!)
+			// Убедись, что в HTML форме создания написано th:object="${newUser}"
+			model.addAttribute("newUser", new User());
+
 			return "admin-list";
 		}
+
 		userService.updateUser(user, roleIds);
 		return "redirect:/admin";
 	}
