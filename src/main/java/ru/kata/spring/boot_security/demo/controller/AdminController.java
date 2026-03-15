@@ -31,7 +31,7 @@ public class AdminController {
 		model.addAttribute("users", userService.getAllUsers());
 		model.addAttribute("currentUser", currentUser);
 		model.addAttribute("allRoles", roleService.getAllRoles());
-		// Добавляем пустой объект для формы "New User"
+
 		if (!model.containsAttribute("newUser")) {
 			model.addAttribute("newUser", new User());
 		}
@@ -45,7 +45,6 @@ public class AdminController {
 	                      Model model,
 	                      @AuthenticationPrincipal User currentUser) {
 
-		// Сеттим роли сразу, чтобы если будет ошибка, пользователь видел, что он выбрал
 		if (roleIds != null) {
 			user.setRoles(new HashSet<>(roleService.getRolesByIds(roleIds)));
 		}
@@ -56,15 +55,14 @@ public class AdminController {
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("activeTab", "newuser");
 
-			// ВНИМАНИЕ: Мы НЕ добавляем здесь model.addAttribute("newUser", new User());
-			// Потому что Spring уже положил в модель 'user' с ошибками под именем 'newUser'
-
 			return "admin-list";
 		}
 
 		userService.addUser(user, roleIds);
+
 		return "redirect:/admin";
 	}
+
 	@PostMapping("/update")
 	public String updateUser(@Validated(OnUpdate.class) @ModelAttribute("user") User user,
 	                         BindingResult bindingResult,
@@ -73,16 +71,11 @@ public class AdminController {
 	                         @AuthenticationPrincipal User currentUser) {
 
 		if (bindingResult.hasErrors()) {
-			// 1. Данные для списка и шапки
+
 			model.addAttribute("users", userService.getAllUsers());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("allRoles", roleService.getAllRoles());
-
-			// 2. Объект с ошибками (для модалки)
 			model.addAttribute("errorUser", user);
-
-			// 3. ПУСТОЙ ОБЪЕКТ ДЛЯ ФОРМЫ NEW USER (Критично!)
-			// Убедись, что в HTML форме создания написано th:object="${newUser}"
 			model.addAttribute("newUser", new User());
 
 			return "admin-list";
