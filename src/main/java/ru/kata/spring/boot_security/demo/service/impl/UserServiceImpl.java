@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -15,7 +14,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,9 +30,9 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 		if (roleIds != null && !roleIds.isEmpty()) {
-			List<Role> roles = roleService.getRolesByIds(roleIds);
-			user.setRoles(new HashSet<>(roles));
-		} else {
+			user.setRoles(new HashSet<>(roleService.getRolesByIds(roleIds)));
+		}
+		else {
 			roleService.getRoleByName("ROLE_USER")
 					.ifPresent(r -> user.setRoles(Set.of(r)));
 		}
@@ -58,8 +56,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		if (roleIds != null) {
-			List<Role> roles = roleService.getRolesByIds(roleIds);
-			managedUser.setRoles(new HashSet<>(roles));
+			managedUser.setRoles(new HashSet<>(roleService.getRolesByIds(roleIds)));
 		}
 
 		userDao.updateUser(managedUser);

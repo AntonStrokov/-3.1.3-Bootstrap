@@ -32,6 +32,7 @@ public class AdminController {
 		model.addAttribute("currentUser", currentUser);
 		model.addAttribute("allRoles", roleService.getAllRoles());
 
+		// Если newUser уже есть (пришел из RedirectAttributes после ошибки), не перезаписываем его
 		if (!model.containsAttribute("newUser")) {
 			model.addAttribute("newUser", new User());
 		}
@@ -45,21 +46,16 @@ public class AdminController {
 	                      Model model,
 	                      @AuthenticationPrincipal User currentUser) {
 
-		if (roleIds != null) {
-			user.setRoles(new HashSet<>(roleService.getRolesByIds(roleIds)));
-		}
-
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("users", userService.getAllUsers());
 			model.addAttribute("allRoles", roleService.getAllRoles());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("activeTab", "newuser");
-
 			return "admin-list";
 		}
 
+		// ПРАВИЛЬНО: Вся логика по ролям ушла внутрь сервиса
 		userService.addUser(user, roleIds);
-
 		return "redirect:/admin";
 	}
 
@@ -71,13 +67,11 @@ public class AdminController {
 	                         @AuthenticationPrincipal User currentUser) {
 
 		if (bindingResult.hasErrors()) {
-
 			model.addAttribute("users", userService.getAllUsers());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("allRoles", roleService.getAllRoles());
+			// Убрали лишний "new User()", оставили только ошибочного юзера для отображения ошибок в модалке
 			model.addAttribute("errorUser", user);
-			model.addAttribute("newUser", new User());
-
 			return "admin-list";
 		}
 
