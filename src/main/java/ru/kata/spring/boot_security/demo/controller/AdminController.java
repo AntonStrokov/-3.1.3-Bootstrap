@@ -14,7 +14,6 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.validation.OnCreate;
 import ru.kata.spring.boot_security.demo.validation.OnUpdate;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -26,16 +25,17 @@ public class AdminController {
 	private final UserService userService;
 	private final RoleService roleService;
 
+	@ModelAttribute("newUser")
+	public User prepareNewUser() {
+		return new User();
+	}
+
 	@GetMapping
 	public String listUsers(Model model, @AuthenticationPrincipal User currentUser) {
 		model.addAttribute("users", userService.getAllUsers());
 		model.addAttribute("currentUser", currentUser);
 		model.addAttribute("allRoles", roleService.getAllRoles());
 
-		// Если newUser уже есть (пришел из RedirectAttributes после ошибки), не перезаписываем его
-		if (!model.containsAttribute("newUser")) {
-			model.addAttribute("newUser", new User());
-		}
 		return "admin-list";
 	}
 
@@ -51,10 +51,10 @@ public class AdminController {
 			model.addAttribute("allRoles", roleService.getAllRoles());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("activeTab", "newuser");
+
 			return "admin-list";
 		}
 
-		// ПРАВИЛЬНО: Вся логика по ролям ушла внутрь сервиса
 		userService.addUser(user, roleIds);
 		return "redirect:/admin";
 	}
@@ -70,8 +70,8 @@ public class AdminController {
 			model.addAttribute("users", userService.getAllUsers());
 			model.addAttribute("currentUser", currentUser);
 			model.addAttribute("allRoles", roleService.getAllRoles());
-			// Убрали лишний "new User()", оставили только ошибочного юзера для отображения ошибок в модалке
 			model.addAttribute("errorUser", user);
+
 			return "admin-list";
 		}
 

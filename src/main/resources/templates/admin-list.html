@@ -8,17 +8,13 @@
     <style>
         body { min-height: 100vh; display: flex; flex-direction: column; background-color: #f8f9fa; margin: 0; }
         .sidebar { width: 240px; background-color: #ffffff; min-height: calc(100vh - 56px); border-right: 1px solid #dee2e6; padding-top: 15px; }
-
-        /* Убираем закругления у кнопок в сайдбаре */
         .sidebar .nav-link { border-radius: 0; margin: 0; color: #0d6efd; padding: 12px 20px; }
         .sidebar .nav-link.active { background-color: #0d6efd !important; color: #ffffff !important; }
-
         .content { flex-grow: 1; padding: 20px 30px; }
         .card-header { background-color: #f7f7f7; font-weight: bold; font-size: 1.2rem; }
         .centered-form-container { width: 300px; margin: 0 auto; text-align: center; }
         .form-label { font-weight: bold; margin-top: 10px; margin-bottom: 2px; display: block; }
         .nav-tabs .nav-link { border-radius: 0.375rem 0.375rem 0 0; }
-        /* Основной стиль для вложенных табов админки */
         .admin-tab-content { border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 0.375rem 0.375rem; }
     </style>
 </head>
@@ -62,6 +58,7 @@
                 </ul>
 
                 <div class="tab-content border rounded-bottom bg-white shadow-sm" style="border-top: none;">
+
                     <div class="tab-pane fade show active" id="usersTable" role="tabpanel">
                         <div class="card-header border-bottom p-3">All users</div>
                         <div class="p-4">
@@ -106,9 +103,6 @@
                         <div class="p-4 d-flex justify-content-center">
                             <div class="centered-form-container">
                                 <form th:action="@{/admin/add}" th:object="${newUser}" method="post" novalidate>
-                                    <input type="text" name="prevent_autofill" style="display:none;" tabindex="-1">
-                                    <input type="password" name="password_fake" style="display:none;" tabindex="-1">
-
                                     <label class="form-label">First name</label>
                                     <input type="text" class="form-control text-start" th:field="*{name}" th:errorclass="is-invalid">
                                     <div class="invalid-feedback" th:errors="*{name}"></div>
@@ -122,7 +116,7 @@
                                     <div class="invalid-feedback" th:errors="*{age}"></div>
 
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-control text-start" th:field="*{email}" th:errorclass="is-invalid" autocomplete="one-time-code" onfocus="this.removeAttribute('readonly');" readonly>
+                                    <input type="email" class="form-control text-start" th:field="*{email}" th:errorclass="is-invalid">
                                     <div class="invalid-feedback" th:errors="*{email}"></div>
 
                                     <label class="form-label">Password</label>
@@ -130,10 +124,9 @@
                                     <div class="invalid-feedback" th:errors="*{password}"></div>
 
                                     <label class="form-label">Role</label>
-                                    <select class="form-select text-start" name="roleIds" multiple size="2" th:classappend="${#fields.hasErrors('roles')} ? 'is-invalid' : ''">
+                                    <select class="form-select text-start" name="roleIds" multiple size="2">
                                         <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${#strings.replace(role.name, 'ROLE_', '')}"></option>
                                     </select>
-                                    <div class="invalid-feedback" th:errors="*{roles}"></div>
 
                                     <button type="submit" class="btn btn-success btn-lg mt-4 px-4 fw-bold">Add new user</button>
                                 </form>
@@ -141,39 +134,43 @@
                         </div>
                     </div>
                 </div>
-            </div> <div class="tab-pane fade" id="v-pills-user" role="tabpanel">
-            <h1 class="fw-bold mb-4">User information-page</h1>
-            <div class="card rounded-0 shadow-sm border">
-                <div class="card-header border-bottom p-3">About user</div>
-                <div class="card-body p-4 bg-white">
-                    <table class="table table-striped align-middle">
-                        <thead>
-                        <tr class="border-top">
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Age</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td th:text="${currentUser.id}"></td>
-                            <td th:text="${currentUser.name}"></td>
-                            <td th:text="${currentUser.lastName}"></td>
-                            <td th:text="${currentUser.age}"></td>
-                            <td th:text="${currentUser.email}"></td>
-                            <td>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-user" role="tabpanel">
+                <h1 class="fw-bold mb-4">User information-page</h1>
+                <div class="card rounded-0 shadow-sm border">
+                    <div class="card-header border-bottom p-3">About user</div>
+                    <div class="card-body p-4 bg-white">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                            <tr class="border-top">
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td th:text="${currentUser.id}"></td>
+                                <td th:text="${currentUser.name}"></td>
+                                <td th:text="${currentUser.lastName}"></td>
+                                <td th:text="${currentUser.age}"></td>
+                                <td th:text="${currentUser.email}"></td>
+                                <td>
                                     <span th:each="roleName : ${#lists.sort(currentUser.roles.![name])}"
                                           th:text="${#strings.replace(roleName, 'ROLE_', '') + ' '}"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div> </div> </div>
+        </div>
+    </div>
 </div>
 
 <div th:each="user : ${users}">
@@ -190,16 +187,34 @@
                         <div class="centered-form-container">
                             <label class="form-label">ID</label>
                             <input type="text" class="form-control bg-light text-start" th:value="${user.id}" disabled>
+
                             <label class="form-label">First name</label>
-                            <input type="text" class="form-control text-start" name="name" th:value="${errorUser != null && errorUser.id == user.id ? errorUser.name : user.name}" th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.name')} ? 'is-invalid' : ''">
+                            <input type="text" class="form-control text-start" name="name"
+                                   th:value="${errorUser != null && errorUser.id == user.id ? errorUser.name : user.name}"
+                                   th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.name')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:if="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.name')}" th:errors="${user.name}"></div>
+
                             <label class="form-label">Last name</label>
-                            <input type="text" class="form-control text-start" name="lastName" th:value="${errorUser != null && errorUser.id == user.id ? errorUser.lastName : user.lastName}" th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.lastName')} ? 'is-invalid' : ''">
+                            <input type="text" class="form-control text-start" name="lastName"
+                                   th:value="${errorUser != null && errorUser.id == user.id ? errorUser.lastName : user.lastName}"
+                                   th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.lastName')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:if="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.lastName')}" th:errors="${user.lastName}"></div>
+
                             <label class="form-label">Age</label>
-                            <input type="number" class="form-control text-start" name="age" step="1" th:value="${errorUser != null && errorUser.id == user.id ? errorUser.age : user.age}" th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.age')} ? 'is-invalid' : ''">
+                            <input type="number" class="form-control text-start" name="age" step="1"
+                                   th:value="${errorUser != null && errorUser.id == user.id ? errorUser.age : user.age}"
+                                   th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.age')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:if="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.age')}" th:errors="${user.age}"></div>
+
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control text-start" name="email" th:value="${errorUser != null && errorUser.id == user.id ? errorUser.email : user.email}" th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.email')} ? 'is-invalid' : ''">
+                            <input type="email" class="form-control text-start" name="email"
+                                   th:value="${errorUser != null && errorUser.id == user.id ? errorUser.email : user.email}"
+                                   th:classappend="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.email')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:if="${errorUser != null && errorUser.id == user.id && #fields.hasErrors('user.email')}" th:errors="${user.email}"></div>
+
                             <label class="form-label">Password</label>
                             <input type="password" class="form-control text-start" name="password">
+
                             <label class="form-label">Role</label>
                             <select class="form-select text-start" name="roleIds" multiple size="2">
                                 <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${#strings.replace(role.name, 'ROLE_', '')}" th:selected="${user.roles.contains(role)}"></option>
@@ -255,23 +270,22 @@
             const tabEl = document.querySelector('#new-user-tab');
             if (tabEl) new bootstrap.Tab(tabEl).show();
         }
+
         /*[# th:if="${errorUser != null}"]*/
-        const modalElement = document.getElementById('editModal' + [[${errorUser.id}]]);
-        if (modalElement) new bootstrap.Modal(modalElement).show();
+        const modalId = 'editModal' + [[${errorUser.id}]];
+        const modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
         /*[/]*/
+
         setTimeout(() => {
             const form = document.querySelector('#newUserTab form');
             if (form && activeTab !== 'newuser') {
                 form.querySelectorAll('input:not([type="hidden"])').forEach(i => { i.value = ''; i.defaultValue = ''; });
             }
         }, 100);
-        const btn = document.querySelector('#new-user-tab');
-        if (btn) btn.addEventListener('shown.bs.tab', () => {
-            if (!document.querySelector('#newUserTab .is-invalid')) {
-                const f = document.querySelector('#newUserTab form');
-                if (f) f.reset();
-            }
-        });
     });
 </script>
 </body>
